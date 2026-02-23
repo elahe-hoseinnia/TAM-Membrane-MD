@@ -1,0 +1,65 @@
+title       = Umbrella pulling simulation 
+define      = -DPOSRES_FC_LIPID=1000.0
+integrator              = md
+dt                      = 0.002
+nsteps                  = 10000000
+nstxout                 = 5000
+nstxtcout               = 5000
+nstvout                 = 50000
+nstfout                 = 50000
+nstcalcenergy           = 100
+nstenergy               = 1000
+nstlog                  = 100
+
+;
+cutoff-scheme           = Verlet
+nstlist                 = 20
+rlist                   = 1.2
+coulombtype             = pme
+rcoulomb                = 1.2
+vdwtype                 = Cut-off
+vdw-modifier            = Force-switch
+rvdw_switch             = 1.0
+rvdw                    = 1.2
+;
+tcoupl                  = Nose-Hoover
+tc_grps                 = LIG Membrane SOLV
+tau_t                   = 1.0 1.0 1.0
+ref_t                   = 310.15 310.15 310.15
+;
+pcoupl                  = Parrinello-Rahman
+pcoupltype              = semiisotropic
+tau_p                   = 5.0
+compressibility         = 4.5e-5  4.5e-5
+ref_p                   = 1.0     1.0
+;
+constraints             = h-bonds
+constraint_algorithm    = LINCS
+continuation            = yes
+;
+nstcomm                 = 100
+comm_mode               = linear
+comm_grps               = SYSTEM
+;
+refcoord_scaling        = com
+;; Generate velocities is off
+gen_vel     = no 
+; Periodic boundary conditions are on in all directions
+pbc     = xyz
+; Long-range dispersion correction
+DispCorr    = EnerPres
+; Pull code
+pull                    = yes
+pull_ncoords            = 1         ; only one reaction coordinate
+pull_ngroups            = 2         ; two groups defining one reaction coordinate
+pull_group1_name        = LIG
+pull_group2_name        = Membrane
+pull_coord1_type        = umbrella  ; harmonic potential
+pull_coord1_geometry    = cylinder
+pull_coord1_vec         = 0 0 1
+pull_coord1_dim         = N N Y
+pull_coord1_groups      = 1 2
+pull_coord1_start       = yes       ; define initial COM distance > 0
+pull_coord1_rate        = 0.00       ; restrain in place
+pull_coord1_k           = 1000      ; kJ mol^-1 nm^-2 
+
